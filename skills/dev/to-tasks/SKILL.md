@@ -18,6 +18,7 @@ Turn a design into ≤5 parent tasks, each with concrete subtasks.
 ## Flow
 
 1. **Read design.** Default `./specs/<feature>/design.md`. Also read `requirements.md` if present. Confirm in one line.
+   - **Milestone feature** (design at `./specs/<project>/<feature>/design.md`): requirements are the ids the feature `Covers` in `../milestones.md`, from `../requirements.md`. Write tasks next to the design.
 2. **Read codebase.** Find the actual files, packages, modules each task touches. Never invent paths.
 3. **Group into ≤5 parent tasks.** By layer or boundary (e.g., data model, API, UI, wiring, tests). Order by dependency: blockers first.
 4. **Subtasks: agent-sized.** Each subtask is one focused change. Names a file, a function, a test. Doable in one CR. If a subtask spans multiple files or unclear scope, split it.
@@ -65,7 +66,7 @@ When the user says "execute" or "run these tasks":
 - Within a parallel parent, dispatch independent subtasks concurrently too.
 - Send all parallel Agent calls in a **single message** with multiple tool uses.
 - Block on a `[serial]` task until its dependencies in the Dependencies section are done.
-- Each subagent gets: the relevant subtask block, the design.md path, the requirements.md path, and explicit file paths it may touch. Use `isolation: "worktree"` if subagents touch overlapping areas.
+- Each subagent gets: the relevant subtask block, the design.md path, the requirements.md path (plus the `Covers` ids for a milestone feature), and explicit file paths it may touch. Use `isolation: "worktree"` if subagents touch overlapping areas.
 - After all subagents return, run the package build once and report failures.
 
 Mark dependencies explicitly so the dispatcher knows what is safe to parallelize:

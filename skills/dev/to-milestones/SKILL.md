@@ -24,7 +24,7 @@ Turn a large requirements doc into ordered milestones. Each milestone is a deliv
 5. **Never invent requirements.** A milestone needs something the doc does not state: ask, or record as an open question. Requirement gaps go back to /to-brd.
 6. **Check coverage.** Every requirement id lands in exactly one milestone or in Deferred. No orphans, no duplicates.
 7. **List open questions** before writing. User resolves or accepts as TBD.
-8. **Write** `./specs/<project>/milestones.md`, then one requirements slice per feature at `./specs/<project>/<feature-kebab-name>/requirements.md` so /to-design runs on it unchanged. Create dirs if missing. Ask before overwriting. Always use `./specs/` even if the project has a `.kiro/specs/` directory or CLAUDE.md mentions one.
+8. **Write** `./specs/<project>/milestones.md`, next to the project's `requirements.md`. Features reference requirement ids; never copy requirement text. Create dir if missing. Ask before overwriting. Always use `./specs/` even if the project has a `.kiro/specs/` directory or CLAUDE.md mentions one.
 
 Question template:
 ```
@@ -77,9 +77,9 @@ Numbered bullets. No long prose. Drop sections that do not apply.
 - OQ1. <unresolved, owner, by-when>
 ```
 
-## Feature requirements slice
+## Downstream
 
-Same structure as /to-brd's BRD. Copy only the requirements this feature covers, ids unchanged, wording unchanged. Add one line under the title: `Part of <project> M<n>. Full requirements: ../requirements.md`. Out of Scope lists what the next milestones add, so /to-design does not build ahead.
+Each feature's design, tasks, and code live in `./specs/<project>/<feature-kebab-name>/`. /to-design, /to-tasks, and /implement-feature read the feature's scope from `milestones.md`: its `Covers` ids from the project's `requirements.md`. Feature names must be unique across milestones.
 
 ## Not your job
 
