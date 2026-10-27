@@ -6,13 +6,14 @@ Personal [Claude Code](https://claude.com/claude-code) skills.
 
 ```
 skills/
-  <skill-name>/
-    SKILL.md        # frontmatter (name, description) + instructions
-    ...             # optional scripts, references, templates
+  <group>/
+    <skill-name>/
+      SKILL.md      # frontmatter (name, description) + instructions
+      ...           # optional scripts, references, assets, examples
 install.sh          # symlinks each skill into ~/.claude/skills
 ```
 
-One folder per skill. Folder name = skill name = slash command.
+Groups are for organizing only. Claude Code sees a flat list: folder name = skill name = slash command, so names must be unique across groups.
 
 ## Install
 
@@ -25,6 +26,8 @@ Skills are symlinked, so editing them here updates Claude Code immediately. Exis
 
 ## Skills
 
+### dev
+
 Spec-driven feature workflow. Each step writes to `./specs/<feature>/`.
 
 | Skill | Input | Output |
@@ -33,3 +36,12 @@ Spec-driven feature workflow. Each step writes to `./specs/<feature>/`.
 | `/to-design` | `requirements.md` | `design.md` |
 | `/to-tasks` | `design.md` | `tasks.md` |
 | `/implement-feature` | `tasks.md` | code + tests, 100% coverage on changes |
+
+### hardware
+
+KiCad board workflow. Pairs with the `kicad-happy` plugin skills.
+
+| Skill | Input | Output |
+|---|---|---|
+| `/to-schematic` | `design-electronics.md` | `hw/<board>.kicad_sch`, ERC clean, datasheet check table |
+| `/to-layout` | approved schematic | `hw/<board>.kicad_pcb`, DRC clean, fab files on request |

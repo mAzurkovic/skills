@@ -1,0 +1,699 @@
+{
+ "net_groups": {
+  "hv": [
+   "VBUS",
+   "PHASE_*",
+   "BUCK_SW",
+   "BUCK_BST",
+   "DRV_VCP",
+   "DRV_CPH",
+   "DRV_CPL",
+   "GHA",
+   "GHB",
+   "GHC"
+  ],
+  "sense": [
+   "?_SENSE_?",
+   "SO?",
+   "SO?_ADC"
+  ],
+  "plane": [
+   "GND"
+  ]
+ },
+ "stackup": {
+  "F": 2,
+  "In1": 1,
+  "In2": 1,
+  "B": 2
+ },
+ "signal_layers": [
+  "F",
+  "In2",
+  "B"
+ ],
+ "current_paths": [
+  {
+   "name": "pass-through VBUS",
+   "net": "VBUS",
+   "from": "J1.2",
+   "to": "J2.2"
+  },
+  {
+   "name": "pass-through GND",
+   "net": "GND",
+   "from": "J1.1",
+   "to": "J2.1"
+  },
+  {
+   "name": "VBUS to Q1",
+   "net": "VBUS",
+   "from": "J1.2",
+   "to": "Q1"
+  },
+  {
+   "name": "phase A",
+   "net": "PHASE_A",
+   "from": "Q1",
+   "to": "J3"
+  },
+  {
+   "name": "shunt A",
+   "net": "SHUNT_A",
+   "from": "Q2",
+   "to": "R8"
+  },
+  {
+   "name": "VBUS to Q3",
+   "net": "VBUS",
+   "from": "J1.2",
+   "to": "Q3"
+  },
+  {
+   "name": "phase B",
+   "net": "PHASE_B",
+   "from": "Q3",
+   "to": "J4"
+  },
+  {
+   "name": "shunt B",
+   "net": "SHUNT_B",
+   "from": "Q4",
+   "to": "R9"
+  },
+  {
+   "name": "VBUS to Q5",
+   "net": "VBUS",
+   "from": "J1.2",
+   "to": "Q5"
+  },
+  {
+   "name": "phase C",
+   "net": "PHASE_C",
+   "from": "Q5",
+   "to": "J5"
+  },
+  {
+   "name": "shunt C",
+   "net": "SHUNT_C",
+   "from": "Q6",
+   "to": "R10"
+  }
+ ],
+ "checks": {
+  "decoupling": [
+   [
+    "C24",
+    "U4",
+    "23",
+    "+3V3",
+    2
+   ],
+   [
+    "C25",
+    "U4",
+    "35",
+    "+3V3",
+    2
+   ],
+   [
+    "C26",
+    "U4",
+    "48",
+    "+3V3",
+    2
+   ],
+   [
+    "C28",
+    "U4",
+    "21",
+    "+3V3",
+    2
+   ],
+   [
+    "C30",
+    "U4",
+    "20",
+    "+3V3",
+    2
+   ],
+   [
+    "C29",
+    "U4",
+    "21",
+    "+3V3",
+    5
+   ],
+   [
+    "C31",
+    "U4",
+    "20",
+    "+3V3",
+    5
+   ],
+   [
+    "C27",
+    "U4",
+    "1",
+    "+3V3",
+    5
+   ],
+   [
+    "C23",
+    "U3",
+    "24",
+    "+3V3",
+    2
+   ],
+   [
+    "C18",
+    "U3",
+    "3",
+    "VBUS",
+    2
+   ],
+   [
+    "C19",
+    "U3",
+    "5",
+    "DRV_VCP",
+    2
+   ],
+   [
+    "C20",
+    "U3",
+    "1",
+    "DRV_CPL",
+    2
+   ],
+   [
+    "C21",
+    "U3",
+    "40",
+    "DRV_VGLS",
+    2
+   ],
+   [
+    "C22",
+    "U3",
+    "38",
+    "DRV_DVDD",
+    2
+   ],
+   [
+    "C41",
+    "U6",
+    "3",
+    "+3V3",
+    2
+   ],
+   [
+    "C42",
+    "U6",
+    "5",
+    "+3V3",
+    2
+   ],
+   [
+    "C40",
+    "U5",
+    "11",
+    "+3V3",
+    2
+   ],
+   [
+    "C16",
+    "U2",
+    "1",
+    "+5V",
+    2
+   ],
+   [
+    "C17",
+    "U2",
+    "5",
+    "+3V3",
+    2
+   ],
+   [
+    "C11",
+    "U1",
+    "8",
+    "VBUS",
+    5
+   ],
+   [
+    "C12",
+    "U1",
+    "8",
+    "VBUS",
+    2
+   ],
+   [
+    "C13",
+    "U1",
+    "7",
+    "BUCK_VCC",
+    2
+   ],
+   [
+    "C14",
+    "U1",
+    "2",
+    "BUCK_BST",
+    2
+   ]
+  ],
+  "pad_distance": [
+   [
+    "Y1",
+    "1",
+    "U4",
+    "5",
+    5,
+    "crystal to MCU"
+   ],
+   [
+    "U7",
+    "6",
+    "J9",
+    "A6",
+    5,
+    "USB ESD to connector"
+   ]
+  ],
+  "keepout_distance": [
+   {
+    "label": "phase copper to encoder",
+    "center_ref": "U5",
+    "nets": [
+     "PHASE_*"
+    ],
+    "refs": [
+     "Q*",
+     "J3",
+     "J4",
+     "J5"
+    ],
+    "min": 10
+   },
+   {
+    "label": "bus copper to encoder",
+    "center_ref": "U5",
+    "nets": [
+     "VBUS"
+    ],
+    "refs": [
+     "Q*",
+     "J1",
+     "J2",
+     "C1",
+     "C2",
+     "C3",
+     "C4",
+     "C5",
+     "C6",
+     "C7",
+     "C8",
+     "C9",
+     "C10",
+     "C44",
+     "C45",
+     "C46",
+     "C47",
+     "C48",
+     "C49"
+    ],
+    "min": 10
+   },
+   {
+    "label": "crystal to switch nodes",
+    "center_ref": "Y1",
+    "nets": [
+     "PHASE_*",
+     "BUCK_SW"
+    ],
+    "refs": [
+     "Q*",
+     "D1",
+     "L1",
+     "U1"
+    ],
+    "min": 10
+   }
+  ]
+ },
+ "freerouting": {
+  "drop_zones": [
+   "GND_top",
+   "GND_bot",
+   "In1_no_tracks"
+  ],
+  "power_layers": [
+   "In1"
+  ],
+  "drop_nets": [
+   "GND"
+  ],
+  "hv_classes": [
+   "HV",
+   "HV_SIG",
+   "GATE_HS"
+  ],
+  "sense_classes": [
+   "SENSE"
+  ],
+  "hv_other_um": 200,
+  "sense_hv_um": 600,
+  "max_passes": 100,
+  "timeout_s": 2400
+ },
+ "fab": {
+  "cpl_rotation": {
+   "*USB_C_Receptacle_HRO_TYPE-C-31-M-12*": 180,
+   "*JST_GH_SM03B-GHS-TB*": 180
+  },
+  "exclude_from_assembly": []
+ },
+ "corridors": [
+  {
+   "name": "pass-through VBUS top",
+   "layers": [
+    "F"
+   ],
+   "width": 2.5,
+   "from": "J1.2",
+   "to": "J2.2",
+   "net": "VBUS",
+   "forbid": [
+    "footprints"
+   ]
+  },
+  {
+   "name": "PWM bus lane",
+   "layers": [
+    "F",
+    "B"
+   ],
+   "width": 2.0,
+   "path": [
+    [
+     127.0,
+     120.6
+    ],
+    [
+     131.0,
+     118.6
+    ],
+    [
+     136.0,
+     118.6
+    ]
+   ],
+   "forbid": [
+    "footprints"
+   ]
+  }
+ ],
+ "blocks": [
+  {
+   "ref": "C20",
+   "x": 119.85,
+   "y": 121.6,
+   "rot": 0,
+   "side": "F",
+   "toward": {
+    "net": "DRV_CPL",
+    "x": 122.0,
+    "y": 122.75
+   }
+  }
+ ],
+ "small_parts": [
+  {
+   "ref": "C23",
+   "anchor": "U3.24",
+   "net": "+3V3",
+   "side": "F"
+  },
+  {
+   "ref": "C24",
+   "anchor": "U4.23",
+   "net": "+3V3",
+   "side": "either"
+  },
+  {
+   "ref": "C40",
+   "anchor": "U5.11",
+   "net": "+3V3",
+   "side": "B",
+   "reach": 4
+  },
+  {
+   "ref": "C42",
+   "anchor": "U6.5",
+   "net": "+3V3",
+   "side": "either"
+  }
+ ],
+ "keepout_circles": [
+  [
+   125.0,
+   125.0,
+   7.5,
+   "B"
+  ]
+ ],
+ "buses": [
+  {
+   "name": "pwm_high",
+   "layer": "F",
+   "width": 0.15,
+   "pitch": 0.5,
+   "nets": [
+    "INHC",
+    "INHB",
+    "INHA"
+   ],
+   "path": [
+    [
+     125.75,
+     120.4
+    ],
+    [
+     125.75,
+     119.3
+    ],
+    [
+     135.35,
+     119.3
+    ],
+    [
+     135.35,
+     119.45
+    ]
+   ],
+   "start": "U3",
+   "end": "U4",
+   "fan": 0.4
+  }
+ ],
+ "currents": [
+  {
+   "nets": [
+    "VBUS"
+   ],
+   "rms": 10,
+   "rise_c": 25,
+   "peak": 40,
+   "peak_s": 2,
+   "peak_rise_c": 60,
+   "volts": 80,
+   "pour": true,
+   "layers": [
+    "F",
+    "In2",
+    "B"
+   ],
+   "why": "10 A pass-through and bridge feed, 40 A 2 s peak, 80 V DRV abs max"
+  },
+  {
+   "nets": [
+    "PHASE_*"
+   ],
+   "rms": 10,
+   "rise_c": 25,
+   "peak": 40,
+   "peak_s": 2,
+   "peak_rise_c": 60,
+   "volts": 80,
+   "pour": true,
+   "layers": [
+    "F",
+    "In2",
+    "B"
+   ],
+   "why": "phase 10 A RMS, 40 A 2 s"
+  },
+  {
+   "nets": [
+    "SHUNT_*"
+   ],
+   "rms": 10,
+   "rise_c": 25,
+   "peak": 40,
+   "peak_s": 2,
+   "peak_rise_c": 60,
+   "volts": 5,
+   "pour": true,
+   "layers": [
+    "F",
+    "B"
+   ],
+   "why": "low-side source to shunt"
+  },
+  {
+   "nets": [
+    "GND"
+   ],
+   "rms": 10,
+   "rise_c": 25,
+   "peak": 40,
+   "peak_s": 2,
+   "peak_rise_c": 60,
+   "volts": 0,
+   "pour": true,
+   "layers": [
+    "F",
+    "In1",
+    "B"
+   ],
+   "why": "bus return"
+  },
+  {
+   "nets": [
+    "GH?"
+   ],
+   "rms": 0.01,
+   "volts": 80,
+   "min_width": 0.3,
+   "why": "gate loop inductance (IDRIVE 0.6 A peak, ns); rides on the phase"
+  },
+  {
+   "nets": [
+    "GL?"
+   ],
+   "rms": 0.01,
+   "volts": 15,
+   "min_width": 0.3,
+   "why": "gate loop inductance (IDRIVE 0.6 A peak, ns)"
+  },
+  {
+   "nets": [
+    "BUCK_SW"
+   ],
+   "rms": 0.35,
+   "volts": 80,
+   "why": "LM5008A 350 mA"
+  },
+  {
+   "nets": [
+    "BUCK_BST",
+    "DRV_VCP",
+    "DRV_CPH",
+    "DRV_CPL"
+   ],
+   "rms": 0.02,
+   "volts": 80
+  },
+  {
+   "nets": [
+    "+5V*",
+    "+5V_BUCK"
+   ],
+   "rms": 0.5,
+   "why": "USB 500 mA / buck 350 mA"
+  },
+  {
+   "nets": [
+    "+3V3"
+   ],
+   "rms": 0.3,
+   "why": "AP2112K budget"
+  },
+  {
+   "nets": [
+    "DRV_VGLS",
+    "DRV_DVDD"
+   ],
+   "rms": 0.03
+  }
+ ],
+ "sizing": {
+  "rise_c": 10,
+  "plating_mm": 0.018,
+  "vias": {
+   "signal": [
+    0.2,
+    0.45
+   ],
+   "power": [
+    0.3,
+    0.6
+   ]
+  },
+  "neck_courtyards": [
+   "U*"
+  ],
+  "pad_exempt_courtyards": [
+   "Q*",
+   "U*"
+  ],
+  "fixed_width_classes": [
+   "USB",
+   "CAN"
+  ]
+ },
+ "planes": [
+  {
+   "net": "GND",
+   "layer": "In1"
+  },
+  {
+   "net": "VBUS",
+   "layer": "In2"
+  },
+  {
+   "net": "+3V3",
+   "layer": "In2"
+  }
+ ],
+ "place_opt": {
+  "movable": [
+   "C*",
+   "R*",
+   "D*",
+   "TH*",
+   "FB*",
+   "LED*",
+   "Y*"
+  ],
+  "fixed": [],
+  "fixed_nets": [
+   "VBUS",
+   "PHASE_*",
+   "SHUNT_*"
+  ],
+  "max_shift": 3.0,
+  "step": 0.25,
+  "rotate": true,
+  "swap": true,
+  "blocks": [
+   "U4",
+   "U6",
+   "U2",
+   "U7"
+  ],
+  "block_shift": 2.0
+ }
+}

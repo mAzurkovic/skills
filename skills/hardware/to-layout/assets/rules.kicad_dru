@@ -1,0 +1,58 @@
+(version 1)
+# Widths, clearances and via sizes are not set here: sizing.py --write generates them from the
+# currents table in layout.json and appends them as a marked block at the end of this file.
+# Custom DRC rules for a 4-layer motor controller, JLCPCB, 2 oz outer / 1 oz inner copper.
+# Copy to hw/<board>.kicad_dru; adapt refdes patterns and the voltage band. Netclasses are assigned in
+# hw/<board>.kicad_pro (net_settings.netclass_patterns). HC = high current, low voltage (shunt top).
+# Every HV rule also lists HV_SIG and GATE_HS: switch-node-referenced nets carry the bus voltage too.
+# tools/render fails if this file does not load: KiCad silently ignores the whole file when any rule is invalid.
+
+# ---- Vias ----------------------------------------------------------------------
+# Signal vias 0.2 / 0.45 mm: the smallest JLCPCB 4-layer via with no extra charge
+# (a 0.2 mm hole costs more only below a 0.45 mm via). 0.2 mm drill counts as 0.5 A.
+# Vias carrying power-stage or gate current stay 0.3 / 0.6 mm (1 A each). GND vias may be
+# either: use 0.3 / 0.6 mm where they carry power-stage return current.
+# JLCPCB: pad hole-to-hole 0.45 mm, via hole-to-hole 0.2 mm (held at 0.25).
+(rule "hole to hole"
+  (constraint hole_to_hole (min 0.45mm)))
+
+(rule "via hole to hole"
+  (condition "A.Type == 'Via' && B.Type == 'Via'")
+  (constraint hole_to_hole (min 0.25mm)))
+
+(rule "via hole to track"
+  (constraint hole_clearance (min 0.2mm)))
+
+# ---- High-current pads connect solid to zones -----------------------------------
+(rule "solid zone connection on power"
+  (condition "A.hasNetclass('HV') || A.hasNetclass('HC')")
+  (constraint zone_connection solid))
+
+(rule "thermal spokes elsewhere"
+  (constraint thermal_spoke_width (min 0.3mm)))
+
+# ---- Diff pairs ----------------------------------------------------------------
+(rule "USB pair"
+  (condition "A.hasNetclass('USB')")
+  (constraint diff_pair_uncoupled (max 3mm))
+  (constraint skew (max 0.5mm)))
+
+(rule "CAN pair"
+  (condition "A.hasNetclass('CAN')")
+  (constraint diff_pair_uncoupled (max 5mm)))
+
+# ---- Shunt Kelvin sense: keep away from switching nodes -------------------------
+(rule "sense away from phase"
+  (condition "A.hasNetclass('SENSE') && (B.hasNetclass('HV') || B.hasNetclass('HV_SIG')) && !A.intersectsCourtyard('U*') && !A.intersectsCourtyard('R*')")
+  (constraint clearance (min 1.0mm)))
+
+# ---- Manufacturing and assembly -------------------------------------------------
+(rule "copper to edge"
+  (constraint edge_clearance (min 0.5mm)))
+
+(rule "courtyards"
+  (constraint courtyard_clearance (min 0.2mm)))
+
+(rule "silk off pads"
+  (layer "F.SilkS")
+  (constraint silk_clearance (min 0.15mm)))
