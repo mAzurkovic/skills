@@ -16,6 +16,19 @@ Turn a rough idea into precise business requirements.
 
 Apply to questions, recommendations, and final BRD.
 
+## Requirement keywords (RFC 2119)
+
+Every requirement states its strength with exactly one keyword, uppercase:
+
+- **MUST**: required. Not met means not done.
+- **MUST NOT**: prohibited. Doing it means not done.
+- **SHOULD**: expected. Skipping it needs a stated reason; name in the requirement when skipping is acceptable.
+- **MAY**: optional. Built only if cheap or asked for.
+
+Uppercase only as a keyword; never "must" in lowercase prose. No "shall", "will", "needs to", "is required to". Default to MUST; use SHOULD or MAY only when the user confirms the softer strength. Each keyword applies to one testable statement: split "MUST X and SHOULD Y" into two requirements.
+
+Add once under the BRD title: `Keywords MUST, MUST NOT, SHOULD, MAY per RFC 2119.`
+
 ## Flow
 
 1. **Read what user gave you.** Text, file, link, code. Never ask what the source already answers.
@@ -40,18 +53,21 @@ Numbered bullets. No long prose. Drop sections that do not apply.
 ```markdown
 # <Feature Name> — Requirements
 
+Keywords MUST, MUST NOT, SHOULD, MAY per RFC 2119.
+
 ## User Stories
 - As <role>, I want <goal>, so <benefit>.
 
 ## Functional Requirements
-- FR1. <trigger>: <system response>. <success criterion>.
-- FR2. ...
+- FR1. <trigger>: system MUST <response>. <success criterion>.
+- FR2. <trigger>: system MUST NOT <response>. <success criterion>.
+- FR3. ...
 
 ## Non-Functional Requirements
-- NFR1. Performance: <metric, threshold>
-- NFR2. Scale: <volume, rate>
-- NFR3. Availability: <SLO>
-- NFR4. Security: <auth, data handling>
+- NFR1. Performance: <metric> MUST be <threshold>.
+- NFR2. Scale: system MUST handle <volume, rate>.
+- NFR3. Availability: system MUST meet <SLO>.
+- NFR4. Security: <auth, data handling> MUST <rule>.
 
 ## Out of Scope
 - <explicitly excluded>
