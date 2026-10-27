@@ -40,8 +40,8 @@ Why: <one sentence>
 - **M1 is the walking skeleton.** Thinnest end-to-end path through the system, real deployment if the project has one.
 - **Riskiest early.** Unknown tech, external integrations, and hard performance requirements go in the first milestones that can hold them.
 - **Each builds on the last.** Never breaks an earlier milestone's demo.
-- **3 to 7 milestones.** Fewer: the project is small, use /to-design directly. More: milestones are too thin, merge.
-- **1 to 4 features per milestone.** A feature is one /to-design unit: one coherent design doc, one tasks.md.
+- **As many milestones as there are demos, up to ~7.** One is fine when the whole project is one demo. More than ~7: milestones are too thin, merge.
+- **One or more features per milestone.** A single feature is fine. Split only when one design doc would cover unrelated parts. A feature is one /to-design unit: one coherent design doc, one tasks.md.
 - **Exit criteria are testable.** Derived from the requirements' success criteria, not new ones.
 
 ## milestones.md Structure
