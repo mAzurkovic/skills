@@ -16,7 +16,7 @@ Turn a task list into working, tested code. Written as the best expert in the la
 
 ## Flow
 
-1. **Read the tasks.** Argument is a path, feature name, or task ids. Default `./specs/<feature>/tasks.md`. Pasted list works too. Also read `design.md` and `requirements.md` alongside it if present. Milestone (`./specs/<project>/m<n>-<name>/tasks.md`): read `../design.md`, `../requirements.md`, and the milestone's entry in `../milestones.md`. Confirm in one line what you read and which tasks you will run.
+1. **Read the tasks.** Argument is a path, feature name, or task ids. Default `./specs/<feature>/tasks.md`. Pasted list works too. Also read `design.md` and `requirements.md` alongside it if present. Milestone (`./specs/<project>/m<n>-<name>/tasks.md`): read `../design.md`, `../requirements.md`, the milestone's entry in `../milestones.md`, and the milestone's own `design.md` if present. Confirm in one line what you read and which tasks you will run.
 2. **Read the codebase before writing.** Language, version, framework, build tool, formatter, linter, type checker, test runner, coverage tool. Read CLAUDE.md, lint and format configs, and 2 or 3 neighboring files the change touches. Trace the real flow end to end. Match what is there.
 3. **Ask one question at a time** only when a task is ambiguous, contradicts the codebase, or needs a new dependency. Never guess a path, API, or library version.
    ```

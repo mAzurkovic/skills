@@ -61,6 +61,7 @@ Numbered bullets. No long prose. Drop sections that do not apply.
 - Exit criteria:
   - <testable criterion>
 - Needs: none.
+- Design: yes.
 
 ## M2. <Name>
 - Delivers: ...
@@ -84,7 +85,12 @@ Numbered bullets. No long prose. Drop sections that do not apply.
 
 ## Downstream
 
-Run /to-tasks once per milestone, in order. Each writes `./specs/<project>/m<n>-<milestone-kebab-name>/tasks.md`; /implement-feature runs on that.
+Per milestone, in order, all in `./specs/<project>/m<n>-<milestone-kebab-name>/`:
+1. /to-design M<n>, only when the milestone is complex enough to need its own design. Writes `design.md`.
+2. /to-tasks M<n>. Writes `tasks.md`.
+3. /implement-feature on that `tasks.md`.
+
+When drafting, flag milestones that likely need their own design (new data model, non-trivial algorithm, multiple interacting components) with `- Design: yes` in their entry.
 
 ## Not your job
 

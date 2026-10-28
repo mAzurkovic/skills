@@ -30,7 +30,7 @@ Skills are symlinked, so editing them here updates Claude Code immediately. Exis
 
 Spec-driven feature workflow. Each step writes to `./specs/<feature>/`.
 
-Large projects: `/to-brd` → `/to-design` → `/to-milestones` splits the design into milestones in build order in `./specs/<project>/milestones.md`. Then run `/to-tasks M<n>` → `/implement-feature` per milestone, in order. Each milestone's tasks go in `./specs/<project>/m<n>-<name>/`.
+Large projects: `/to-brd` → `/to-design` → `/to-milestones` splits the design into milestones in build order in `./specs/<project>/milestones.md`. Then per milestone, in order: `/to-design M<n>` (only if the milestone is complex enough) → `/to-tasks M<n>` → `/implement-feature`. Each milestone's files go in `./specs/<project>/m<n>-<name>/`.
 
 | Skill | Input | Output |
 |---|---|---|
