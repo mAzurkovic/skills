@@ -75,9 +75,9 @@ Never cut: input validation at trust boundaries, error handling that prevents da
 The spec is scaffolding for you, not part of the product. Code must read as if the spec never existed.
 
 Never put any of these in source, tests, comments, docstrings, identifiers, file names, log lines, or error messages:
-- Requirement or decision ids: `FR1`, `NFR2`, `D3`, `OQ1`, `US-4`, or any similar encoding.
+- Requirement or decision ids: `FR1`, `NFR2`, `D3`, `OQ1`, `US-4`, milestone ids `M2`, or any similar encoding.
 - Task numbers: `1.2`, `task 3`, `step 4`.
-- Spec paths or words: `specs/`, `requirements.md`, `design.md`, `tasks.md`, "per the design", "as required by".
+- Spec paths or words: `specs/`, `requirements.md`, `design.md`, `milestones.md`, `tasks.md`, "per the design", "as required by".
 
 Name tests and code after behavior: `test_rejects_expired_token`, not `test_fr3`.
 
@@ -97,7 +97,7 @@ Name tests and code after behavior: `test_rejects_expired_token`, not `test_fr3`
 Before reporting, scan added lines:
 
 ```bash
-git diff -U0 HEAD | grep '^+' | grep -nE '\b(N?FR|OQ|US|D)-?[0-9]+\b|\b[Tt]ask [0-9]+(\.[0-9]+)?\b|requirements\.md|design\.md|tasks\.md|specs/'
+git diff -U0 HEAD | grep '^+' | grep -nE '\b(N?FR|OQ|US|D|M)-?[0-9]+\b|\b[Tt]ask [0-9]+(\.[0-9]+)?\b|requirements\.md|design\.md|milestones\.md|tasks\.md|specs/'
 ```
 
 Not a git repo: run the same pattern over the touched files. Review each hit; remove every real leak. Also include untracked new files (`git add -N` first or grep them directly).
