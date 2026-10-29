@@ -18,7 +18,7 @@ Turn requirements into a short technical design. No fluff, no invention.
 ## Flow
 
 1. **Read the BRD.** Default `./specs/<feature>/requirements.md`. If user pasted requirements, use those. Confirm in one line what you read.
-   - **Milestone** (user names one, e.g. "M2", and `./specs/<project>/milestones.md` exists): input is the project `design.md` and `requirements.md` plus that milestone's entry. Detail only what the milestone `Builds` and `Covers`. The project design is fixed: refine within it, never contradict it; a needed change goes back to the project design first. Earlier milestones are built: reuse them. Write to `./specs/<project>/m<n>-<milestone-kebab-name>/design.md`.
+   - **Milestone** (user names one, e.g. "M2", and `milestones.md` exists next to the project `design.md`, in the **project dir**, e.g. `docs/` or `./specs/<project>/`): input is the project `design.md` and `requirements.md` plus that milestone's entry. Detail only what the milestone `Builds` and `Covers`. The project design is fixed: refine within it, never contradict it; a needed change goes back to the project design first. Earlier milestones are built: reuse them. Write to `<project dir>/m<n>-<milestone-kebab-name>/design.md`.
 2. **Read the codebase.** Before any question, explore. Find existing patterns, services, schemas, libs the feature touches. State what you found.
 3. **Ask one question at a time.** Only when the answer is not in the BRD or codebase. Provide your recommended answer with one-line reasoning.
 4. **Never invent.** If you do not know a class name, table, endpoint, or library version, ask or look it up. Do not guess.
