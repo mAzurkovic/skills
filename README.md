@@ -39,7 +39,7 @@ Large projects: `/to-brd` → `/to-design` → `/to-milestones` splits the desig
 | `/to-milestones` | large `design.md` | `milestones.md` |
 | `/to-tasks` | `design.md` | `tasks.md` |
 | `/implement-feature` | `tasks.md` | code + tests, 100% coverage on changes |
-| `/pr` | current branch | GitHub PR, description in Simplified Technical English |
+| `/pr` | branch diff vs default branch | GitHub PR, description in Simplified Technical English |
 
 ### hardware
 
