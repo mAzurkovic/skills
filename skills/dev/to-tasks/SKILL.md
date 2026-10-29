@@ -18,7 +18,7 @@ Turn a design into ≤5 parent tasks, each with concrete subtasks.
 ## Flow
 
 1. **Read design.** Default `./specs/<feature>/design.md`. Also read `requirements.md` if present. Confirm in one line.
-   - **Milestone** (user names one, e.g. "M2", and `milestones.md` sits next to the design): scope is that milestone's `Builds` and `Covers` only. If `./specs/<project>/m<n>-<milestone-kebab-name>/design.md` exists (from /to-design on the milestone), read it too; it wins on detail. Earlier milestones are built: reuse them. Later ones are out of scope: do not build ahead, do not block them. Write to `./specs/<project>/m<n>-<milestone-kebab-name>/tasks.md`.
+   - **Milestone** (user names one, e.g. "M2", and `milestones.md` sits next to the design): scope is that milestone's `Builds` and `Covers` only. The **project dir** is the directory holding `milestones.md` and the project `design.md` (e.g. `docs/` or `./specs/<project>/`). If `<project dir>/m<n>-<milestone-kebab-name>/design.md` exists (from /to-design on the milestone), read it too; it wins on detail. Earlier milestones are built: reuse them. Later ones are out of scope: do not build ahead, do not block them. Write to `<project dir>/m<n>-<milestone-kebab-name>/tasks.md`.
 2. **Read codebase.** Find the actual files, packages, modules each task touches. Never invent paths.
 3. **Group into ≤5 parent tasks.** By layer or boundary (e.g., data model, API, UI, wiring, tests). Order by dependency: blockers first.
 4. **Subtasks: agent-sized.** Each subtask is one focused change. Names a file, a function, a test. Doable in one CR. If a subtask spans multiple files or unclear scope, split it.
