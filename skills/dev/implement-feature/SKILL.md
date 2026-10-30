@@ -1,117 +1,242 @@
 ---
 name: implement-feature
-description: Implement a task list (e.g. ./specs/<feature>/tasks.md from /to-tasks) as minimal, idiomatic, expert-level code with 100% test coverage and no spec references leaking into the code. Use when user says "/implement-feature", "implement these tasks", "execute tasks.md", or hands over a task list to build.
+description: Implement a task list (e.g. ./specs/<feature>/tasks.md from /to-tasks) as minimal, idiomatic, expert-level code with 100% test coverage, then verify it live, review it, fix until clean, and raise a PR. Use when user says "/implement-feature", "implement these tasks", "execute tasks.md", or hands over a task list to build.
 argument-hint: "[tasks.md path | feature name | task ids]"
 ---
 
 # /implement-feature
 
-Turn a task list into working, tested code. Written as the best expert in the language would write it. Nothing extra.
+Make a task list into working, tested code. Write it as an expert in the language writes it. Add nothing extra.
 
-## Voice
+## Terms
 
-- No em-dashes.
-- Fragments fine.
-- SHORT. Code speaks; prose does not defend it.
+- **Spec:** tasks.md, design.md, requirements.md. For a milestone, also its entry in milestones.md.
+- **Task:** one checkbox item in tasks.md.
+- **Fix task:** a task that the Feature loop adds. Id `F<n>`. It is in progress.md, not in tasks.md.
+- **Round:** one pass of the Feature loop.
 
 ## Flow
 
-1. **Read the tasks.** Argument is a path, feature name, or task ids. Default `./specs/<feature>/tasks.md`. Pasted list works too. Also read `design.md` and `requirements.md` alongside it if present. Milestone (`./specs/<project>/m<n>-<name>/tasks.md`): read `../design.md`, `../requirements.md`, the milestone's entry in `../milestones.md`, and the milestone's own `design.md` if present. Confirm in one line what you read and which tasks you will run.
-2. **Read the codebase before writing.** Language, version, framework, build tool, formatter, linter, type checker, test runner, coverage tool. Read CLAUDE.md, lint and format configs, and 2 or 3 neighboring files the change touches. Trace the real flow end to end. Match what is there.
-3. **Ask one question at a time** only when a task is ambiguous, contradicts the codebase, or needs a new dependency. Never guess a path, API, or library version.
-   ```
-   Q: <question>
-   Recommend: <answer>
-   Why: <one sentence>
-   ```
-4. **Execute in dependency order.** Honor `[parallel]` / `[serial, needs N]` tags and the Dependencies section.
-   - Parallel parents: one Agent call per parent, all in a **single message**. Use `isolation: "worktree"` when they touch overlapping files.
-   - Every subagent prompt includes: its subtask block, the design and requirements paths, the files it may touch, and this line verbatim: `Read ~/.claude/skills/implement-feature/SKILL.md and follow its Standards, Tests, and Leak check sections exactly.`
-   - Small list or tightly coupled tasks: do them inline, no subagents.
-5. **Per subtask:** write the test and the code, run the tests, tick `- [x]` in tasks.md.
-6. **Finish:** run the full Done gate below once everything is merged in. Fix failures before reporting.
-7. **Report** in at most five lines: what was built, coverage result, anything skipped and when to add it, open issues.
+1. **Read the spec.** Argument: path, feature name, or task ids. Default `./specs/<feature>/tasks.md`. Read the spec files next to it. Milestone (`./specs/<project>/m<n>-<name>/`): also read `../design.md`, `../requirements.md`, and its entry in `../milestones.md`. If `progress.md` exists, continue from it.
+2. **Read the code.** Find the language, version, framework, and tools: build, format, lint, types, tests, coverage. Read CLAUDE.md, the tool configs, and 2 or 3 files near the change. Follow the data flow from start to end.
+3. **Build.** Do each task with the Build loop, in dependency order. Obey `[parallel]` and `[serial, needs N]`.
+   - Parallel parents: one subagent each, all in one message. Use `isolation: "worktree"` if they change the same files.
+   - Each subagent prompt has: its tasks, the spec paths, the files it can change, and this line: `Read ~/.claude/skills/implement-feature/SKILL.md. Follow Rules, Build loop, Code, and Tests. If you must stop, send the report to me. Do not ask the user.`
+   - Few tasks, or tasks that depend on each other: do them yourself.
+4. **Check.** Run the Feature loop until it stops.
+5. **Ship.** If all Ship conditions are true, make a PR. If not, do not.
+6. **Report.**
 
-Do not commit, push, or add dependencies unless the user says so.
+## Rules
 
-## Standards
+- Do not guess a path, API, or version. If a task is not clear, conflicts with the code, or needs a new dependency: ask one question.
+  ```
+  Q: <question>
+  Recommend: <answer>
+  Why: <one sentence>
+  ```
+- Do not commit, push, or add dependencies. Exception: the Ship steps.
+- Do not change the spec. Requirements: /to-brd. Design: /to-design. Tasks: /to-tasks.
+- Print a progress line at each step. See Progress.
 
-### Write it like the expert
+## Build loop (one task)
 
-Code must read as if written by a recognized expert in that language and its ecosystem. Not a generalist translating from another language.
-
-- Idiomatic for the language and version in use: its type system, error model, naming, module layout, and standard idioms. Pythonic Python, idiomatic Go, idiomatic Rust, modern TypeScript. No Java-isms in Python, no exceptions-as-control-flow in Go.
-- Follow the community standard where the repo is silent: PEP 8 / typing, Effective Go, Rust API Guidelines, the framework's own documented conventions.
-- Repo conventions beat community conventions. Consistency with surrounding code wins.
-- Precise types. No `any`, untyped dicts, or stringly-typed values where the language offers better.
-- Names say what things are in domain terms. Short functions, one job each.
-- Errors handled where they can be handled, propagated idiomatically otherwise. Never swallowed.
-- Comments only for a non-obvious *why*. Never restate the code. No commented-out code, no TODO scaffolding.
-
-### Minimal (the ladder)
-
-Understand the problem first, then stop at the first rung that holds:
-
-1. Does this need to exist? Not required by the task: skip it.
-2. Already in this codebase? Reuse the helper, type, or pattern.
-3. Stdlib does it? Use it.
-4. Native platform feature covers it? Use it (`<input type="date">`, CSS over JS, DB constraint over app code).
-5. Already-installed dependency solves it? Use it. Never add one for what a few lines can do.
-6. Can it be one line? One line.
-7. Only then: the minimum code that works.
-
-Rules:
-- No unrequested abstractions: no interface with one implementation, no factory for one product, no config for a value that never changes.
-- No boilerplate, no scaffolding "for later".
-- Deletion over addition. Boring over clever. Fewest files. Shortest working diff, in the right place.
-- Two options the same size: take the one correct on edge cases.
-- Bug in shared code: fix the root cause once in the shared function, not in each caller.
-- A deliberate simplification with a known ceiling (global lock, O(n²) scan) gets one plain comment naming the ceiling and the upgrade path.
-
-Never cut: input validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the task explicitly asks for.
-
-### No spec leakage
-
-The spec is scaffolding for you, not part of the product. Code must read as if the spec never existed.
-
-Never put any of these in source, tests, comments, docstrings, identifiers, file names, log lines, or error messages:
-- Requirement or decision ids: `FR1`, `NFR2`, `D3`, `OQ1`, `US-4`, milestone ids `M2`, or any similar encoding.
-- Task numbers: `1.2`, `task 3`, `step 4`.
-- Spec paths or words: `specs/`, `requirements.md`, `design.md`, `milestones.md`, `tasks.md`, "per the design", "as required by".
-
-Name tests and code after behavior: `test_rejects_expired_token`, not `test_fr3`.
-
-## Tests
-
-**100% line and branch coverage of every line the feature adds or changes.** Measured, not estimated.
-
-- Use the project's existing test framework and coverage tool. None configured: use the ecosystem default (pytest + pytest-cov, vitest/jest `--coverage`, `go test -cover`, `cargo llvm-cov`, JaCoCo) and ask before adding it.
-- Test behavior through the public interface. No asserting on private internals, no mocking what you own. Mock only true boundaries (network, clock, filesystem when slow).
-- Every branch and error path gets a case that fails if it breaks. A test with no meaningful assertion does not count.
-- Idiomatic and minimal: table-driven / parametrized cases where the language favors them. No duplicate tests, no fixture frameworks the repo does not already use.
-- A line you cannot cover is a line that should not exist. Delete it before reaching for an exclusion. Coverage-ignore pragmas only for genuinely unreachable platform code, and call each one out in the report.
-- Keep any existing project-wide coverage threshold passing.
-
-## Leak check
-
-Before reporting, scan added lines:
-
-```bash
-git diff -U0 HEAD | grep '^+' | grep -nE '\b(N?FR|OQ|US|D|M)-?[0-9]+\b|\b[Tt]ask [0-9]+(\.[0-9]+)?\b|requirements\.md|design\.md|milestones\.md|tasks\.md|specs/'
+```
+attempt = 0
+loop:
+  write the test. Run it. It must fail because the behavior is missing.
+  write the code.
+  run the task's tests, lint, and type check.
+  pass             → tick the task. Next task.
+  fail             → attempt += 1. Write the failure in progress.md.
+  same failure 2x  → use a different approach.
+  attempt = 3      → Stop and ask.
 ```
 
-Not a git repo: run the same pattern over the touched files. Review each hit; remove every real leak. Also include untracked new files (`git add -N` first or grep them directly).
+Read the error before each attempt. Fix the cause, not the symptom.
+
+### Correct code, not test-passing code
+
+The goal is correct behavior for all valid inputs. Passing tests is only evidence.
+
+- Get each test from the spec. Get expected values from the spec or by hand. Never copy them from the code output.
+- The code must be correct for inputs that the tests do not use. Do not special-case test inputs. Do not hardcode expected outputs. Do not detect a test run.
+- Do not change a test to match the code. Change a test only if it is wrong against the spec. Write the test name and the reason in progress.md.
+- Do not weaken an assertion, widen a tolerance, delete or skip a case, or loosen a type to get a pass.
+- Do not mock the unit under test or code you own. Mock only external boundaries: network, clock, slow filesystem.
+- Do not discard the error that a test checks. Do not use sleeps or retries to hide a failure.
+- Before you tick a task, ask: "If I delete the tests, is this code still correct?" If no, the task is not done.
+
+## Feature loop (whole feature)
+
+```
+loop:
+  Done gate       → fail     → fix tasks. Next round.
+  /verify         → FAIL     → fix tasks. Next round.
+  /expert-review  → findings → fix tasks. Next round.
+  all clean       → Ship.
+  stuck           → Stop and ask.
+```
+
+- A round is clean only if all three are clean in that round. After a fix, the next round runs all three again. This proves that the fix broke nothing.
+- Do each fix task with the Build loop.
+- There is no round limit. Stuck means no progress:
+  - A fixed failure or finding comes back.
+  - The same /verify case fails in 2 rounds in a row.
+  - The number of fix tasks does not decrease for 2 rounds in a row.
+  - 10 rounds. This is a safety limit.
+- Start a new subagent for /verify and for /expert-review in each round.
+- The /verify subagent gets only: the spec paths, the repo path, any deploy approval from the user, and `Read ~/.claude/skills/verify/SKILL.md and follow it.` Never give it your notes or claims about the code.
+- The /expert-review subagent gets: the spec paths, what to review, the rejected findings from progress.md, and `Read ~/.claude/skills/expert-review/SKILL.md and follow it.`
+- Fix all findings, Nice to have also. Reject a finding only if it has no real failing case, or it conflicts with the spec or the repo conventions. Write the reason in progress.md. A rejected finding does not block a clean round.
+- /verify SKIP is a pass. BLOCKED: Stop and ask. If the user gives approval, run /verify again with it.
 
 ## Done gate
 
 All must pass:
-- Build succeeds.
-- Formatter, linter, and type checker clean with the repo's config.
-- Full test suite passes.
-- Coverage report shows 100% lines and branches on changed code.
-- Leak check clean.
-- Every executed subtask ticked in tasks.md.
+- Build.
+- Formatter, linter, and type checker, with the repo config.
+- Full test suite.
+- 100% line and branch coverage on changed code.
+- Leak check.
+- All tasks ticked.
 
-## Not your job
+## Ship
 
-No requirements changes (that is /to-brd). No design changes (that is /to-design). No re-planning tasks (that is /to-tasks). A task that is wrong or impossible: stop and ask.
+Conditions. All must be true:
+- The Feature loop stopped on a clean round. In that round:
+  - Done gate passed. No coverage pragmas were added.
+  - /verify: PASS on all cases. `Not verified: none`. `Spec gaps: none`. SKIP is OK.
+  - /expert-review: no findings, except findings rejected with a reason.
+- No test was changed, except tests that progress.md records as wrong against the spec.
+
+Questions during the Build loop do not block Ship. If you are not sure, do not ship.
+
+Steps:
+1. On the default branch: make the branch `<feature-kebab-name>`. On a feature branch: use it.
+2. Stage only the code and tests of this feature. Stage `specs/` only if git already tracks it.
+3. Commit with one STE line, 60 characters max, imperative. Add the commit attribution from the system reminder, if there is one.
+4. Run `/pr auto`.
+
+## Stop and ask
+
+Stop. Send one block: what you tried, the last failure, your recommendation. Wait for the user.
+
+Stop when:
+- A task failed 3 attempts.
+- The Feature loop is stuck.
+- /verify finds a spec gap, or the spec conflicts with the code. Recommend /to-design. Do not hide the gap in code.
+- A fix needs a new dependency, a deploy to a real cloud account, or a change outside the scope.
+- /verify is BLOCKED.
+
+## progress.md
+
+Put it next to tasks.md. Make it on the first run. Update it after each attempt and each round. Read it first at each start.
+
+```
+# Progress
+Round: 2
+
+| Task | Status | Attempts | Last failure |
+|------|--------|----------|--------------|
+| 1.2 | fail | 2 | POST /orders → 500 on missing customer_id |
+| F1  | done | 1 | verify #2: missing customer_id → 500 |
+| F2  | todo | 0 | review #3: N+1 query in list_orders |
+
+Changed tests:
+- test_total_includes_tax: expected 110, spec says 108.
+
+Rejected findings:
+- review #5 "use a dataclass": conflicts with repo convention (TypedDict).
+```
+
+## Progress
+
+Print one line at each step and each loop event. No paragraphs. Print subagent results when they return.
+
+```
+[read] tasks.md: 4 parents, 11 tasks. Continue at 2.1.
+[build 2.1] attempt 1: FAIL: test_rejects_expired_token, KeyError 'exp'
+[build 2.1] attempt 2: PASS
+[build 2.2] same failure 2x. New approach: <one phrase>
+[feature r1] done gate: PASS. verify: FAIL 1 of 6 (missing customer_id → 500, want 400). Add F1.
+[feature r2] done gate: PASS. verify: PASS 6 of 6. review: 4 findings. Add F2 to F5.
+[feature r3] done gate: PASS. verify: PASS 6 of 6. review: clean.
+[ship] PR: <url>
+[stop] 1.3 failed 3 attempts. Last: <failure>. Recommend: <...>
+```
+
+## Report
+
+One line each. Nothing else.
+
+```
+Built: <what>
+Coverage: <lines %>, <branches %> on changed code. Pragmas: <file:line, why> | none
+Verified: <cases that passed in the last /verify>
+Not verified: <cases not run, and why> | none
+Review: <n> findings. Fixed: <#s>. Rejected: <#s and why> | none
+Rounds: <n>
+Skipped: <what, and when to add it> | none
+Open issues: <...> | none
+PR: <url> | not raised: <condition that failed>
+```
+
+## Code
+
+Write as an expert in this language and its ecosystem writes.
+
+- Use the idioms of the language and version: types, error model, names, module layout.
+- Repo conventions first. Then the community standard: PEP 8, Effective Go, Rust API Guidelines, the framework docs.
+- Use precise types. No `any`, untyped dicts, or strings for structured values.
+- Use domain names. One job for each function.
+- Handle an error where you can. If not, propagate it. Never discard it.
+- Comment only a "why" that the code cannot show. No commented-out code. No TODOs.
+
+### Minimal
+
+Understand the problem first. Then use the first step that works:
+1. Not needed for the task? Do not write it.
+2. In the codebase? Use it.
+3. In the standard library? Use it.
+4. A platform feature? Use it: `<input type="date">`, CSS not JS, a DB constraint not app code.
+5. In an installed dependency? Use it. Do not add a dependency for a few lines.
+6. Can it be one line? Write one line.
+7. If not: the minimum code that works.
+
+- No abstraction that the task does not need: no interface with one implementation, no factory for one product, no config for a fixed value.
+- No boilerplate. No code "for later".
+- Delete before you add. Simple before clever. Fewest files. Smallest diff.
+- Two options of the same size: use the one that is correct on edge cases.
+- Bug in shared code: fix it once, in the shared function.
+- A known limit (global lock, O(n²) scan): one comment with the limit and the upgrade path.
+- Never cut: input validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the task asks for.
+
+### No spec leaks
+
+The code must look as if the spec does not exist. Do not put these in code, tests, comments, names, file names, logs, or error messages:
+- Ids: `FR1`, `NFR2`, `D3`, `OQ1`, `US-4`, `M2`, `F2`.
+- Task numbers: `1.2`, `task 3`, `step 4`.
+- Spec words: `specs/`, `requirements.md`, `design.md`, `milestones.md`, `tasks.md`, `progress.md`, "per the design", "as required by".
+
+Name tests for behavior: `test_rejects_expired_token`, not `test_fr3`.
+
+## Tests
+
+- 100% line and branch coverage on all added or changed lines. Measure it.
+- Use the repo test framework and coverage tool. If there is none: recommend the ecosystem default (pytest-cov, vitest or jest `--coverage`, `go test -cover`, `cargo llvm-cov`, JaCoCo) and ask.
+- Test behavior through the public interface. Do not test private internals.
+- Each branch and error path has a test that fails if it breaks. A test without a real assertion does not count.
+- Use table-driven or parametrized tests if the language prefers them. No duplicate tests. No new fixture frameworks.
+- A line you cannot cover must not exist. Delete it. Use a coverage pragma only for unreachable platform code.
+- Keep the project coverage threshold passing.
+
+## Leak check
+
+Scan the added lines:
+
+```bash
+git diff -U0 HEAD | grep '^+' | grep -nE '\b(N?FR|OQ|US|D|M)-?[0-9]+\b|\bF[0-9]+\b|\b[Tt]ask [0-9]+(\.[0-9]+)?\b|requirements\.md|design\.md|milestones\.md|tasks\.md|progress\.md|specs/'
+```
+
+Include untracked files: run `git add -N` first. Not a git repo: scan the changed files. Check each hit. Remove each real leak.

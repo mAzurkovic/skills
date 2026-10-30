@@ -1,6 +1,7 @@
 ---
 name: pr
 description: Open a pull request for the current branch with a short description in ASD-STE100 Simplified Technical English (Purpose, Key Changes, Testing). Use when user says "/pr", "make a PR", "open a PR", or wants to merge a piece of code.
+argument-hint: "[auto]"
 ---
 
 # /pr
@@ -31,6 +32,8 @@ Apply to title and all sections.
 5. **Draft.** Title: imperative, max 60 chars, STE. Body: template below.
 6. **Show the draft** to the user. Wait for approval or edits.
 7. **Create.** `gh pr create --title ... --body-file <tmp file>`. Return the PR URL.
+
+**`auto` argument** (from /implement-feature after all its Ship conditions hold): skip the uncommitted-changes question in step 1 and the approval wait in step 6. Print the draft, then create. Still stop on the default branch, a failed push, or a missing `gh` login.
 
 ## Template
 

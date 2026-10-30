@@ -40,6 +40,8 @@ Large projects: `/to-brd` → `/to-design` → `/to-milestones` splits the desig
 | `/to-tasks` | `design.md` | `tasks.md` |
 | `/implement-feature` | `tasks.md` | code + tests, 100% coverage on changes |
 | `/pr` | branch diff vs default branch | GitHub PR, description in Simplified Technical English |
+| `/verify` | spec + running system | pass or fail per case, from a real deploy and call |
+| `/expert-review` | uncommitted changes, branch, or PR | numbered findings: bugs, risks, idiom, lean |
 
 ### hardware
 
