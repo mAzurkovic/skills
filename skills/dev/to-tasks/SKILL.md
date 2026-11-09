@@ -18,9 +18,9 @@ Turn a design into ≤5 parent tasks, each with concrete subtasks.
 ## Flow
 
 1. **Read design.** Default `./specs/<feature>/design.md`. Also read `requirements.md` if present. Confirm in one line.
-   - **Milestone** (user names one, e.g. "M2", and `milestones.md` sits next to the design): scope is that milestone's `Builds` and `Covers` only. The **project dir** is the directory holding `milestones.md` and the project `design.md` (e.g. `docs/` or `./specs/<project>/`). If `<project dir>/m<n>-<milestone-kebab-name>/design.md` exists (from /to-design on the milestone), read it too; it wins on detail. Earlier milestones are built: reuse them. Later ones are out of scope: do not build ahead, do not block them. Write to `<project dir>/m<n>-<milestone-kebab-name>/tasks.md`.
+   - **Feature of a milestone** (user names one, e.g. "M2 F1", and `milestones.md` exists): the **project dir** holds `milestones.md` and the project `design.md` (e.g. `docs/` or `./specs/<project>/`). Scope is that feature only. Input is its entry in `milestones.md`, the project docs, and the feature's own `requirements.md` and `design.md` if it has them; they win on detail. A feature may have neither: then its entry and the project docs are the input. Features already built: reuse them. Later ones are out of scope: do not build ahead, do not block them. Write to `<project dir>/m<n>-<milestone-kebab-name>/f<k>-<feature-kebab-name>/``tasks.md`.
 2. **Read codebase.** Find the actual files, packages, modules each task touches. Never invent paths.
-3. **Group into ≤5 parent tasks.** By layer or boundary (e.g., data model, API, UI, wiring, tests). Order by dependency: blockers first.
+3. **Group into ≤5 parent tasks, by behavior, not by layer.** Each parent is something that runs and can be tested end to end, cutting through whatever layers it needs ("a prompt gets relevant memories", not "storage layer"). Add only the part of a layer that this behavior needs. Order by dependency: blockers first. More than 5 parents: the feature is too big; say so and propose how to split it.
 4. **Subtasks: agent-sized.** Each subtask is one focused change. Names a file, a function, a test. Doable in one CR. If a subtask spans multiple files or unclear scope, split it.
 5. **Ask one question at a time** only when scope, ordering, or location is genuinely unclear. Provide recommendation with one-line reason.
 6. **Never invent.** Unknown file path, class, or test framework: ask or grep first.
@@ -72,10 +72,9 @@ When the user says "execute" or "run these tasks":
 Mark dependencies explicitly so the dispatcher knows what is safe to parallelize:
 
 ```markdown
-## 1. Data model [parallel]
-## 2. API handlers [serial, needs 1]
-## 3. UI components [parallel]
-## 4. Wiring [serial, needs 2 and 3]
+## 1. Create an order and read it back [serial]
+## 2. Reject invalid orders [parallel, needs 1]
+## 3. List a customer's orders [parallel, needs 1]
 ```
 
 ## Not your job

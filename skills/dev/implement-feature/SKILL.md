@@ -17,7 +17,7 @@ Make a task list into working, tested code. Write it as an expert in the languag
 
 ## Flow
 
-1. **Read the spec.** Argument: path, feature name, or task ids. Default `./specs/<feature>/tasks.md`. Read the spec files next to it. Milestone (`./specs/<project>/m<n>-<name>/`): also read `../design.md`, `../requirements.md`, and its entry in `../milestones.md`. If `progress.md` exists, continue from it.
+1. **Read the spec.** Argument: path, feature name, or task ids. Default `./specs/<feature>/tasks.md`. Read the spec files next to it. Feature of a milestone (`./specs/<project>/m<n>-<name>/f<k>-<name>/`): `requirements.md` and `design.md` next to tasks.md exist only if the feature needed them. Also read `../../design.md`, `../../requirements.md`, and the milestone and feature entry in `../../milestones.md`. Run one feature at a time, never a whole milestone. If `progress.md` exists, continue from it.
 2. **Read the code.** Find the language, version, framework, and tools: build, format, lint, types, tests, coverage. Read CLAUDE.md, the tool configs, and 2 or 3 files near the change. Follow the data flow from start to end.
 3. **Build.** Do each task with the Build loop, in dependency order. Obey `[parallel]` and `[serial, needs N]`.
    - Parallel parents: one subagent each, all in one message. Use `isolation: "worktree"` if they change the same files.
@@ -38,6 +38,7 @@ Make a task list into working, tested code. Write it as an expert in the languag
 - Do not commit, push, or add dependencies. Exception: the Ship steps.
 - Do not change the spec. Requirements: /to-brd. Design: /to-design. Tasks: /to-tasks.
 - Print a progress line at each step. See Progress.
+- Remove temp files, sandboxes and processes that you or your tools made. Check before you delete.
 
 ## Build loop (one task)
 
@@ -71,24 +72,35 @@ The goal is correct behavior for all valid inputs. Passing tests is only evidenc
 
 ```
 loop:
-  Done gate       → fail     → fix tasks. Next round.
-  /verify         → FAIL     → fix tasks. Next round.
-  /expert-review  → findings → fix tasks. Next round.
+  Done gate       → fail     → fix tasks. Run the Done gate again.
+  /verify         → FAIL     → fix tasks. Run /verify again.
+  /expert-review  → Must fix → fix tasks. Run the rechecks in the table.
   all clean       → Ship.
+  round limit     → Ship with open findings listed.
   stuck           → Stop and ask.
 ```
 
-- A round is clean only if all three are clean in that round. After a fix, the next round runs all three again. This proves that the fix broke nothing.
+Rechecks after a fix:
+
+| Fix | Recheck |
+|-----|---------|
+| Spec or doc text only | None. It does not block Ship. |
+| Small code fix | Done gate. /verify if behavior changed. |
+| Must fix in code, or a large code change | Done gate, /verify, and one /expert-review of that diff only. |
+
+- Run at most 2 /expert-review rounds on a feature. Do not fix the Must fix findings of the second round. List them as open in the Report and the PR, and ship.
+- Run at most 3 rounds. After round 3, ship if the Done gate and /verify pass. If not, Stop and ask.
 - Do each fix task with the Build loop.
-- There is no round limit. Stuck means no progress:
+- Stuck means no progress or too many rounds:
   - A fixed failure or finding comes back.
-  - The same /verify case fails in 2 rounds in a row.
-  - The number of fix tasks does not decrease for 2 rounds in a row.
-  - 10 rounds. This is a safety limit.
-- Start a new subagent for /verify and for /expert-review in each round.
-- The /verify subagent gets only: the spec paths, the repo path, any deploy approval from the user, and `Read ~/.claude/skills/verify/SKILL.md and follow it.` Never give it your notes or claims about the code.
-- The /expert-review subagent gets: the spec paths, what to review, the rejected findings from progress.md, and `Read ~/.claude/skills/expert-review/SKILL.md and follow it.`
-- Fix all findings, Nice to have also. Reject a finding only if it has no real failing case, or it conflicts with the spec or the repo conventions. Write the reason in progress.md. A rejected finding does not block a clean round.
+  - The same /verify case fails 2 times in a row.
+  - 3 /verify runs have finished and the last one did not pass.
+- Start a new subagent for each /verify and each /expert-review, so that each one has a fresh context.
+- Each /verify and /expert-review subagent prompt has this line: `Open no visible browser windows. Use headless browsers only. Call no paid or third-party service unless the spec needs it and the user approved it. Do not read or copy secrets files.`
+- The /verify subagent gets only: the spec paths, the repo path, any deploy approval from the user, and `Read ~/.claude/skills/verify/SKILL.md and follow it.` On a rerun, also: the case numbers that failed in the last /verify, and the spec items that the fix tasks address. Never give it your notes or claims about the code.
+- /verify saves its cases and run script in `verify/` next to tasks.md, and reuses them on reruns. Do not read or change `verify/`. Use only the /verify report.
+- The /expert-review subagent gets: the spec paths, the diff to review, the rejected findings from progress.md, and `Read ~/.claude/skills/expert-review/SKILL.md and follow it.` It reviews the diff, and reads more of the code only when it needs the context to understand the diff.
+- Fix Must fix findings only. Write all other findings in progress.md as follow-ups, and list them in the Report. They do not block a clean round. Reject a Must fix finding only if it has no real failing case, or it conflicts with the spec or the repo conventions. Write the reason in progress.md. A rejected finding does not block a clean round.
 - /verify SKIP is a pass. BLOCKED: Stop and ask. If the user gives approval, run /verify again with it.
 
 ## Done gate
@@ -97,26 +109,28 @@ All must pass:
 - Build.
 - Formatter, linter, and type checker, with the repo config.
 - Full test suite.
-- 100% line and branch coverage on changed code.
+- Every piece of logic and every error path that can fail has a test. Measure line coverage and report it. No percentage is required.
 - Leak check.
 - All tasks ticked.
 
 ## Ship
 
 Conditions. All must be true:
-- The Feature loop stopped on a clean round. In that round:
-  - Done gate passed. No coverage pragmas were added.
-  - /verify: PASS on all cases. `Not verified: none`. `Spec gaps: none`. SKIP is OK.
-  - /expert-review: no findings, except findings rejected with a reason.
+- The Feature loop stopped with these results on the final code:
+  - Done gate passed.
+  - /verify: PASS on all cases that ran. SKIP is OK. Each `Not verified` item has the user's approval and is in the PR. `Spec gaps` that affect this code: none.
+  - /expert-review: no open Must fix findings, except findings rejected with a reason, or left open by the round limits and listed in the PR.
 - No test was changed, except tests that progress.md records as wrong against the spec.
+- You ran the final code on a real input and have the real output, for the Proof section of /pr. See that skill for the rules.
 
 Questions during the Build loop do not block Ship. If you are not sure, do not ship.
 
 Steps:
 1. On the default branch: make the branch `<feature-kebab-name>`. On a feature branch: use it.
 2. Stage only the code and tests of this feature. Stage `specs/` only if git already tracks it.
+   Never stage `progress.md`, `verify/`, scratch files, or anything else the project does not need.
 3. Commit with one STE line, 60 characters max, imperative. Add the commit attribution from the system reminder, if there is one.
-4. Run `/pr auto`.
+4. Run `/pr auto`. Give it the proof command, input, and output.
 
 ## Stop and ask
 
@@ -172,10 +186,10 @@ One line each. Nothing else.
 
 ```
 Built: <what>
-Coverage: <lines %>, <branches %> on changed code. Pragmas: <file:line, why> | none
+Coverage: <lines %> on changed code. Untested: <file:line, why> | none
 Verified: <cases that passed in the last /verify>
 Not verified: <cases not run, and why> | none
-Review: <n> findings. Fixed: <#s>. Rejected: <#s and why> | none
+Review: <n> findings. Fixed: <#s>. Rejected: <#s and why> | none. Follow-ups: <#s> | none
 Rounds: <n>
 Skipped: <what, and when to add it> | none
 Open issues: <...> | none
@@ -223,12 +237,12 @@ Name tests for behavior: `test_rejects_expired_token`, not `test_fr3`.
 
 ## Tests
 
-- 100% line and branch coverage on all added or changed lines. Measure it.
+- Test all added or changed logic and error paths. Measure line coverage. A percentage is not the goal; untested logic is the problem.
 - Use the repo test framework and coverage tool. If there is none: recommend the ecosystem default (pytest-cov, vitest or jest `--coverage`, `go test -cover`, `cargo llvm-cov`, JaCoCo) and ask.
 - Test behavior through the public interface. Do not test private internals.
 - Each branch and error path has a test that fails if it breaks. A test without a real assertion does not count.
 - Use table-driven or parametrized tests if the language prefers them. No duplicate tests. No new fixture frameworks.
-- A line you cannot cover must not exist. Delete it. Use a coverage pragma only for unreachable platform code.
+- Delete a line that cannot run. An error path that only a rare platform condition can reach may stay untested; name it in the Report.
 - Keep the project coverage threshold passing.
 
 ## Leak check
