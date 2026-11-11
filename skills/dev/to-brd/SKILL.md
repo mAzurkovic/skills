@@ -33,7 +33,7 @@ Add once under the BRD title: `Keywords MUST, MUST NOT, SHOULD, MAY per RFC 2119
 
 1. **Read what user gave you.** Text, file, link, code. Never ask what the source already answers.
    - **Feature of a milestone** (user names one, e.g. "M2 F1", and `milestones.md` exists): the feature's entry is the input, within the project `requirements.md`, which it must not contradict. Write to `<project dir>/m<n>-<milestone-kebab-name>/f<k>-<feature-kebab-name>/``requirements.md`, not the path in step 7.
-2. **Ask one question at a time.** Single focused question. Wait for answer. Provide your recommended answer with one-line reasoning. User confirms or corrects.
+2. **Ask one question at a time.** Single focused question. Wait for answer. Provide your recommended answer with one-line reasoning. User confirms or corrects. If the user asks for batched questions, ask all independent questions of this step together, each in the question template; then the ones that depend on the answers.
 3. **Explore instead of asking.** If the codebase or a doc can answer, go look. State what you found, then ask only what is still unclear.
 4. **Depth-first.** Follow each branch to resolution before returning.
 5. **Stop when every requirement is testable, every actor named, every failure mode enumerated, every success criterion quantified.**

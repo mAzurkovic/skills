@@ -22,7 +22,7 @@ Turn a design into ≤5 parent tasks, each with concrete subtasks.
 2. **Read codebase.** Find the actual files, packages, modules each task touches. Never invent paths.
 3. **Group into ≤5 parent tasks, by behavior, not by layer.** Each parent is something that runs and can be tested end to end, cutting through whatever layers it needs ("a prompt gets relevant memories", not "storage layer"). Add only the part of a layer that this behavior needs. Order by dependency: blockers first. More than 5 parents: the feature is too big; say so and propose how to split it.
 4. **Subtasks: agent-sized.** Each subtask is one focused change. Names a file, a function, a test. Doable in one CR. If a subtask spans multiple files or unclear scope, split it.
-5. **Ask one question at a time** only when scope, ordering, or location is genuinely unclear. Provide recommendation with one-line reason.
+5. **Ask one question at a time** only when scope, ordering, or location is genuinely unclear. Provide recommendation with one-line reason. If the user asks for batched questions, ask all independent questions of this step together, each in the question template; then the ones that depend on the answers.
 6. **Never invent.** Unknown file path, class, or test framework: ask or grep first.
 7. **List open questions** before writing.
 8. **Write tasks** to `./specs/<feature-kebab-name>/tasks.md`. Create dir if missing. Ask before overwriting. Always use `./specs/` even if the project has a `.kiro/specs/` directory or CLAUDE.md mentions one.
